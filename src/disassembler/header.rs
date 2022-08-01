@@ -1,54 +1,47 @@
-use std::io::Bytes;
+use std::collections::HashMap;
 
-struct Block<T> {
-    pub pos: i32,
-    pub size: i32,
-    pub value: Option<T>
+struct Block {
+    pub pos: usize,
+    pub size: usize,
+    pub value: Option<Vec<u8>>
 }
 
-impl<T> Block<T> {
-    pub fn new(pos: i32, size: i32) -> Self {
-        Self {
+impl Block {
+    pub fn new(pos: usize, size: usize) -> Self {
+        Block {
             pos,
             size,
-            value: None,
+            value: None
         }
     }
 
-    pub fn value_from(&self, mem: Vec<u8>) {
-
+    pub fn value_from(
+        &mut self,
+        mem: Vec<u8>
+    ) {
+        if mem.len() < self.pos + self.size {
+            return
+        }
+        self.value = Some(mem[self.pos..self.size].to_vec())
     }
 }
 
 trait Header {
     fn parse(&self);
     fn dump(&self);
+    fn init(&self, mem: Vec<u8>);
 }
 /// 16 bytes header
-struct NesHeader {
-    magic: Block<Bytes<u8>>,
-    len_prg_rom: Block<u8>,
-    len_chr_rom: Block<u8>,
-    f6 : Block<u8>,
-    f7: Block<u8>,
-    len_prg_ram: Block<u8>,
-    f9: Block<u8>,
-    f10: Block<u8>,
-    reserved: Block<i64>
+pub struct NesHeader {
+    fields: HashMap<String, Block>,
+    mem: Vec<u8>
 }
 
 impl NesHeader {
     pub fn new() -> Self {
-        Self {
-            magic: Block::new(0, 4),
-            len_prg_rom: Block::new(0, 0),
-            len_chr_rom: Block::new(0, 0),
-            f6: Block::new(0, 0),
-            f7: Block::new(0, 0),
-            len_prg_ram: Block::new(0, 0),
-            f9: Block::new(0, 0),
-            f10: Block::new(0, 0),
-            reserved: Block::new(0, 0)
+        NesHeader {
+            fields: HashMap::new(),
+            mem: Vec::<u8>::new()
         }
     }
 }
@@ -59,6 +52,10 @@ impl Header for NesHeader {
     }
 
     fn dump(&self) {
+        todo!()
+    }
+
+    fn init(&self, mem: Vec<u8>) {
         todo!()
     }
 }
