@@ -1,25 +1,42 @@
 use std::collections::HashMap;
 
 use crate::{
-    error::NesError,
-    block::Block
+    utils::error::NesError,
+    utils::block::Block,
+    models::header_model::Header
 };
+
+lazy_static! {
+    pub static ref NES_HEADER_FIELDS: HashMap<&'static str, Block> = {
+        let mut m = HashMap::new();
+
+        m.insert("magic", Block::new(0, 4));
+        m.insert("len_prg_rom", Block::new(4, 1));
+        m.insert("len_chr_rom", Block::new(5, 1));
+        m.insert("f6", Block::new(6, 1));
+        m.insert("f7", Block::new(7, 1));
+        m.insert("len_prg_ram", Block::new(8, 1));
+        m.insert("f9", Block::new(9, 1));
+        m.insert("f10", Block::new(10, 1));
+        m.insert("reserved", Block::new(11, 5));
+
+        m
+    };
+}
 
 pub struct NesHeader {
     fields: HashMap<String, Block>,
     mem: Vec<u8>
 }
-pub trait Header {
-    fn parse(&mut self) -> &mut Self;
-    fn dump(&self) -> &Self;
-    fn init_header(&mut self, mem: &Vec<u8>) -> &mut Self;
-    fn check_magic(&self);
-}
 
 /// 16 bytes header
 impl NesHeader {
+    pub const HEADER_SIZE: usize = 16;
+    pub const TRAINER_SIZE: usize = 512;
+    pub const IF_TRAINER_SIZE: usize = NesHeader::HEADER_SIZE + NesHeader::TRAINER_SIZE;
+
     pub fn new() -> Self {
-        NesHeader {
+        Self {
             fields: HashMap::new(),
             mem: Vec::<u8>::new()
         }
@@ -33,14 +50,20 @@ impl NesHeader {
     }
 
     pub fn is_trainer(&self) -> bool {
-        let f6 = self.fields.get("f6");
+        let f6 = self.get_field("f6");
 
-        if let Some(block) = f6 {
-            if let Some(value) = &block.value {
-                let byte = value[0];
-
-                return byte & 0b0000_0100 != 0
+            if let Some(value) = f6.value {
+                return value[0] & 0b0000_0100 != 0
             }
+
+        false
+    }
+
+    pub fn is_chr(&self) -> bool {
+        let chr_rom = self.get_field("len_chr_rom");
+
+        if let Some(value) = chr_rom.value {
+            return value[0] > 0;
         }
 
         false
@@ -84,15 +107,12 @@ impl Header for NesHeader {
         mem: &Vec<u8>
     ) -> &mut Self {
         // Init header fields
-        self.fields.insert(String::from("magic"), Block::new(0, 4));
-        self.fields.insert(String::from("len_prg_rom"), Block::new(4, 1));
-        self.fields.insert(String::from("len_chr_rom"), Block::new(5, 1));
-        self.fields.insert(String::from("f6"), Block::new(6, 1));
-        self.fields.insert(String::from("f7"), Block::new(7, 1));
-        self.fields.insert(String::from("len_prg_ram"), Block::new(8, 1));
-        self.fields.insert(String::from("f9"), Block::new(9, 1));
-        self.fields.insert(String::from("f10"), Block::new(10, 1));
-        self.fields.insert(String::from("reserved"), Block::new(11, 5));
+
+        for (key, value) in NES_HEADER_FIELDS.iter() {
+            let block = Block::new(value.pos, value.size);
+    
+            self.fields.insert(String::from(*key), block);
+        }
 
         // Init header mem
         self.mem = mem[0..16].to_vec();

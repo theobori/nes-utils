@@ -1,8 +1,7 @@
-mod error;
 mod disassembler;
-mod opcode;
-mod addressing;
-mod block;
+mod chr;
+mod utils;
+mod models;
 
 #[macro_use]
 extern crate lazy_static;
@@ -10,18 +9,21 @@ extern crate lazy_static;
 use std::env;
 
 use disassembler::disassembler::NesDisassembler;
-use error::NesError;
+use models::nesutil_model::{
+    Util,
+    Save
+};
+use utils::error::NesError;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     let args_count = args.len();
 
     if args_count < 2 {
-        panic!("{}", NesError::CLIArguments);
+        panic!("{}", NesError::CliArguments);
     }
 
     NesDisassembler::new(&args[1])
-        .mem_from_file()
-        .disassemble()
+        .run()
         .save_as("mario.asm");
 }

@@ -7,7 +7,7 @@ pub struct Block {
 
 impl Block {
     pub fn new(pos: usize, size: usize) -> Self {
-        Block {
+        Self {
             pos,
             size,
             value: None

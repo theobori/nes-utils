@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::addressing::AddressingMode;
+use crate::utils::addressing::AddressingMode;
 
 #[derive(Clone, Copy)]
 pub struct OpCode {
@@ -17,7 +17,7 @@ impl OpCode {
         len: u8,
         mode: AddressingMode
 ) -> Self {
-        OpCode { code, mnemonic, len, mode }
+        Self { code, mnemonic, len, mode }
     }
 
     pub fn arg_to_string(arg_bytes: &[u8]) -> String {
