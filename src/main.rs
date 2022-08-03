@@ -1,6 +1,8 @@
 mod error;
 mod disassembler;
-pub mod opcode;
+mod opcode;
+mod addressing;
+mod block;
 
 #[macro_use]
 extern crate lazy_static;
@@ -14,12 +16,12 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let args_count = args.len();
 
-    if args_count < 2 || args_count > 3 {
-        panic!("{}", NesError::Arguments);
+    if args_count < 2 {
+        panic!("{}", NesError::CLIArguments);
     }
 
-    let mut nes_disas = NesDisassembler::new()
-        .mem_from_file(&args[1])
+    NesDisassembler::new(&args[1])
+        .mem_from_file()
         .disassemble()
-        .print();
+        .save_as("mario.asm");
 }
