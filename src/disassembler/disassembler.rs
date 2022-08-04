@@ -143,12 +143,12 @@ impl NesDisassembler {
         self.pc = NesHeader::HEADER_SIZE;
 
         // Get header metadata
-        self.prg_rom.size = self.header.get_field("len_prg_rom").size * 0x4000;
-        self.chr_rom.size = self.header.get_field("len_prg_rom").size * 0x2000;
+        self.prg_rom.size = self.header.field("len_prg_rom").value.unwrap()[0] as usize * NesHeader::PRG_ROM_UNIT_SIZE;
+        self.chr_rom.size = self.header.field("len_chr_rom").value.unwrap()[0] as usize * NesHeader::CHR_ROM_UNIT_SIZE;
 
         // Check if there is the trainer (512 bytes)
         if self.header.is_trainer() {
-            self.prg_rom.pos = NesHeader::IF_TRAINER_SIZE;
+            self.prg_rom.pos += NesHeader::TRAINER_SIZE;
             self.pc = self.prg_rom.pos;
         }
         self.chr_rom.pos = self.prg_rom.size + self.prg_rom.pos;

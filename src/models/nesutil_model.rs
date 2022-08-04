@@ -1,4 +1,4 @@
-pub trait Util {
+pub trait Util: Sized {
     fn run(&mut self) -> &mut Self;
 }
 

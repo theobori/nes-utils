@@ -33,7 +33,9 @@ pub struct NesHeader {
 impl NesHeader {
     pub const HEADER_SIZE: usize = 16;
     pub const TRAINER_SIZE: usize = 512;
-    pub const IF_TRAINER_SIZE: usize = NesHeader::HEADER_SIZE + NesHeader::TRAINER_SIZE;
+    pub const PRG_ROM_UNIT_SIZE: usize = 0x4000;
+    pub const CHR_ROM_UNIT_SIZE: usize = 0x2000;
+    pub const CHR_ROM_BANK_SIZE: usize = 0x1000;
 
     pub fn new() -> Self {
         Self {
@@ -42,7 +44,7 @@ impl NesHeader {
         }
     }
 
-    pub fn get_field(&self, key: &str) -> Block {
+    pub fn field(&self, key: &str) -> Block {
         match self.fields.get(key) {
             Some(block) => block.clone(),
             None => Block::default()
@@ -50,7 +52,7 @@ impl NesHeader {
     }
 
     pub fn is_trainer(&self) -> bool {
-        let f6 = self.get_field("f6");
+        let f6 = self.field("f6");
 
             if let Some(value) = f6.value {
                 return value[0] & 0b0000_0100 != 0
@@ -60,7 +62,7 @@ impl NesHeader {
     }
 
     pub fn is_chr(&self) -> bool {
-        let chr_rom = self.get_field("len_chr_rom");
+        let chr_rom = self.field("len_chr_rom");
 
         if let Some(value) = chr_rom.value {
             return value[0] > 0;

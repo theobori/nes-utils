@@ -11,3 +11,6 @@ Cargo.lock
 
 # Testings games
 games/
+
+# Dumping CHR ROM graphic data
+*.png
