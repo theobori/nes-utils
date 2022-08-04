@@ -41,7 +41,7 @@ pub fn read_file(path: &String) -> Vec<u8> {
     }
 }
 
-pub fn join_any(vec: &[u8], sep: &str) -> String {
+pub fn join_bytes(vec: &[u8], sep: &str) -> String {
     let ret: Vec<String> = vec
         .iter()
         .map(|value| format!("{:02x?}", value))

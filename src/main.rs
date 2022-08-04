@@ -3,21 +3,10 @@ mod chr;
 mod utils;
 mod models;
 
-use chr::chr::NesChr;
-// use disassembler::disassembler::NesDisassembler;
-use models::nesutil_model::{
-    Util,
-    Save
-};
-use utils::error::NesError;
-
 #[macro_use]
 extern crate lazy_static;
 use std::path::PathBuf;
 use structopt::StructOpt;
-
-
-use std::env;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "nes-utils")]
@@ -38,7 +27,7 @@ struct Opt {
     #[structopt(short, long)]
     output: bool,
 
-    /// Output file
+    /// Input file
     #[structopt(parse(from_os_str))]
     input: PathBuf
 }

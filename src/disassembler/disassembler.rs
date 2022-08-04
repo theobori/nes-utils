@@ -9,7 +9,7 @@ use crate::{
             path_to_name,
             write_file,
             read_file,
-            join_any,
+            join_bytes,
             unwrap_str
         }
     },
@@ -214,7 +214,7 @@ impl NesDisassembler {
 
         for line in self.lines.iter_mut() {
             spaces = " ".repeat(n - line.len());
-            comment = join_any(&line.bytes, " ");
+            comment = join_bytes(&line.bytes, " ");
             comment = format!("{} ; {}", spaces, comment);
             line.comment = Some(comment);
         }
