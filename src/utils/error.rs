@@ -2,7 +2,6 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum NesError {
-    CliArguments,
     FileNotFound,
     FileInvalid,
     WrongNesFormat,
@@ -14,7 +13,6 @@ pub enum NesError {
 impl fmt::Display for NesError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            NesError::CliArguments => write!(f, "Invalid CLI arguments"),
             NesError::FileNotFound => write!(f, "File not found"),
             NesError::FileInvalid => write!(f, "Invalid file"),
             NesError::WrongNesFormat => write!(f, "Invalid NES format"),

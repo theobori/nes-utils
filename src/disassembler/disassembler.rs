@@ -17,7 +17,7 @@ use crate::{
         header_model::Header,
         nesutil_model::{
             Util,
-            Save
+            Save, NesUtil
         }
     }
 };
@@ -223,37 +223,36 @@ impl NesDisassembler {
     }
 }
 
+impl NesUtil for NesDisassembler { }
+
 impl Util for NesDisassembler {
-    fn run(&mut self) -> &mut Self {
+    fn run(&mut self) {
         self
         .parse()
         .disassemble()
         .add_comments();
-
-        self
+    
     }
 }
 
 impl Save for NesDisassembler {
-    fn save_as(&mut self, filename: &str) -> &mut Self {
+    fn save_as(&mut self, filename: &str) {
         let mut line_str = String::from("");
-
+        
         for line in &self.lines {
             line_str.push_str(&format!("{}", line));
         }
-
+        
         write_file(
             &filename.to_string(),
             line_str.as_bytes()
         );
-
-        self
     }
-
-    fn save(&mut self) -> &mut Self {
+    
+    fn save(&mut self) {
         let name = path_to_name(&self.path);
         let path = format!("./{}.asm", name);
-
+        
         self.save_as(&path)
     }
 }

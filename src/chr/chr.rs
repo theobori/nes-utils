@@ -2,7 +2,7 @@ use crate::{
     models::{
         nesutil_model::{
             Save,
-            Util
+            Util, NesUtil
         },
         header_model::Header
     },
@@ -34,20 +34,6 @@ impl NesChr {
             header: NesHeader::new(),
             chr_rom: Block::new(0, 0),
             mem: read_file(path),
-            images: Vec::new()
-        };
-
-        ret.header.init_header(&ret.mem);
-
-        ret
-    }
-
-    pub fn new_from_mem(mem: &Vec<u8>) -> Self {
-        let mut ret = Self {
-            path: String::from("default.asm"),
-            header: NesHeader::new(),
-            chr_rom: Block::new(0, 0),
-            mem: mem.to_vec(),
             images: Vec::new()
         };
 
@@ -104,14 +90,14 @@ impl NesChr {
     }
 }
 
-impl Save for NesChr {
-    fn save(&mut self) -> &mut Self {
-        self.save_as(&self.path.clone());
+impl NesUtil for NesChr { }
 
-        self
+impl Save for NesChr {
+    fn save(&mut self) {
+        self.save_as(&self.path.clone());
     }
 
-    fn save_as(&mut self, path: &str) -> &mut Self {
+    fn save_as(&mut self, path: &str) {
         let mut n = 0;
 
         for image in &mut self.images {
@@ -123,13 +109,11 @@ impl Save for NesChr {
             image.save_as(&path);
             n += 1;
         }
-
-        self
     }
 }
 
 impl Util for NesChr {
-    fn run(&mut self) -> &mut Self {
+    fn run(&mut self) {
         self.parse();
 
         if self.header.is_chr() == false {
@@ -137,7 +121,5 @@ impl Util for NesChr {
         }
 
         self.chr_to_img();
-
-        self
     }
 }

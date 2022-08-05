@@ -72,13 +72,11 @@ impl NesImage {
 }
 
 impl Save for NesImage {
-    fn save(&mut self) -> &mut Self {
+    fn save(&mut self) {
         self.save_as(&self.path.clone());
-
-        self
     }
 
-    fn save_as(&mut self, path: &str) -> &mut Self {
+    fn save_as(&mut self, path: &str) {
         let mut buffer: Vec<u8> = Vec::new();
 
         for pixel in &self.mem {
@@ -96,7 +94,5 @@ impl Save for NesImage {
             NesImage::H as u32,
             image::ColorType::Rgb8
         ).expect("Unable to dump this bank");
-
-        self
     }
 }
