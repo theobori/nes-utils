@@ -228,10 +228,9 @@ impl NesUtil for NesDisassembler { }
 impl Util for NesDisassembler {
     fn run(&mut self) {
         self
-        .parse()
-        .disassemble()
-        .add_comments();
-    
+            .parse()
+            .disassemble()
+            .add_comments();
     }
 }
 

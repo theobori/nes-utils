@@ -104,10 +104,7 @@ impl Header for NesHeader {
         }
     }
     
-    fn init_header(
-        &mut self,
-        mem: &Vec<u8>
-    ) -> &mut Self {
+    fn init_header(&mut self, mem: &Vec<u8>) -> &mut Self {
         // Init header fields
 
         for (key, value) in NES_HEADER_FIELDS.iter() {

@@ -22,10 +22,7 @@ impl Block {
         }
     }
 
-    pub fn value_from(
-        &mut self,
-        mem: &Vec<u8>
-    ) {
+    pub fn value_from(&mut self, mem: &Vec<u8>) {
         if mem.len() < self.pos + self.size {
             return;
         }

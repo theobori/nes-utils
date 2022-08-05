@@ -51,6 +51,7 @@ fn main() {
 
     for obj in objs.iter_mut() {
         obj.run();
+        
         match opt.output {
             Some(ref path) => obj.save_as(path),
             None => obj.save()
