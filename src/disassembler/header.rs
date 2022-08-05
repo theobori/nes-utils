@@ -37,10 +37,18 @@ impl NesHeader {
     pub const CHR_ROM_UNIT_SIZE: usize = 0x2000;
     pub const CHR_ROM_BANK_SIZE: usize = 0x1000;
 
-    pub fn new() -> Self {
+    pub fn new(mem: &Vec<u8>) -> Self {
+        let mut fields = HashMap::new();
+
+        for (key, value) in NES_HEADER_FIELDS.iter() {
+            let block = Block::new(value.pos, value.size);
+    
+            fields.insert(String::from(*key), block);
+        }
+
         Self {
-            fields: HashMap::new(),
-            mem: Vec::<u8>::new()
+            fields: fields,
+            mem: mem[0..16].to_vec()
         }
     }
 
@@ -102,20 +110,5 @@ impl Header for NesHeader {
             },
             None => panic!("{}", NesError::HeaderNotParsed)
         }
-    }
-    
-    fn init_header(&mut self, mem: &Vec<u8>) -> &mut Self {
-        // Init header fields
-
-        for (key, value) in NES_HEADER_FIELDS.iter() {
-            let block = Block::new(value.pos, value.size);
-    
-            self.fields.insert(String::from(*key), block);
-        }
-
-        // Init header mem
-        self.mem = mem[0..16].to_vec();
-
-        self
     }
 }

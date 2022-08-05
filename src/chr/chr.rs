@@ -29,17 +29,15 @@ pub struct NesChr {
 
 impl NesChr {
     pub fn new(path: &String) -> Self {
-        let mut ret = Self {
+        let mem = read_file(path);
+
+        Self {
             path: String::from(path),
-            header: NesHeader::new(),
+            header: NesHeader::new(&mem),
             chr_rom: Block::new(0, 0),
-            mem: read_file(path),
+            mem,
             images: Vec::new()
-        };
-
-        ret.header.init_header(&ret.mem);
-
-        ret
+        }
     }
 
     fn parse(&mut self) -> &Self {

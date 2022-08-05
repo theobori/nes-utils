@@ -22,11 +22,7 @@ use crate::{
     }
 };
 
-use std::{
-    fmt,
-    fs::OpenOptions,
-    io::prelude::*
-};
+use std::fmt;
 use std::cmp::Ordering;
 
 struct Line {
@@ -125,19 +121,17 @@ pub struct NesDisassembler {
 
 impl NesDisassembler {
     pub fn new(path: &String) -> Self {
-        let mut ret = Self {
+        let mem = read_file(path);
+
+        Self {
             path: String::from(path),
-            header: NesHeader::new(),
-            mem: read_file(path),
+            header: NesHeader::new(&mem),
+            mem,
             lines: Vec::new(),
             pc: 0,
             prg_rom: Block::new(NesHeader::HEADER_SIZE, 0),
             chr_rom: Block::new(0, 0)
-        };
-
-        ret.header.init_header(&ret.mem);
-
-        ret
+        }
     }
 
     fn parse(&mut self) -> &mut Self {
