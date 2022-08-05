@@ -12,5 +12,9 @@ Cargo.lock
 # Testings games
 games/
 
-# Dumping CHR ROM graphic data
+# Dumping CHR ROM
 *.png
+*.chr
+
+# Dumping PRG ROM
+*.asm

@@ -226,22 +226,6 @@ impl NesDisassembler {
         self
     }
 
-    fn include_chr(
-        &mut self,
-        asm_path: &str,
-        name: &str
-    ) -> &mut Self {
-        let mut f = OpenOptions::new()
-            .write(true)
-            .append(true)
-            .open(asm_path)
-            .expect("Unable to open this file");
-        
-        writeln!(f, "\n\n; CHR\n.incbin {}.chr", name).unwrap();
-
-        self
-    }
-
     fn dump_chr(&mut self, path: &str) -> bool {
         match &self.chr_rom.value {
             Some(data) => {
@@ -269,22 +253,25 @@ impl Save for NesDisassembler {
         let mut line_str = String::from("");
         let name = path_to_name(path);
         
+        // Dumping PRG
+        line_str.push_str("; PRG ROM\n\n");
+
         for line in &self.lines {
             line_str.push_str(&format!("{}", line));
         }
         
-        // Dumping assembly code
+        // Dumping CHR
+        let chr_path = format!("{}.chr", name);
+
+        if self.dump_chr(&chr_path) {
+            line_str.push_str(&format!("\n\n; CHR ROM\n.incbin {}.chr\n", name));
+        }
+
+        // Writing bytes to the file
         create_and_write_file(
             &path.to_string(),
             line_str.as_bytes()
         );
-
-        // Dumping and include CHR
-        let chr_path = format!("{}.chr", name);
-    
-        if self.dump_chr(&chr_path) {
-            self.include_chr(path, name);
-        }
     }
     
     fn save(&mut self) {
