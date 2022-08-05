@@ -7,7 +7,6 @@ use crate::{
         opcode,
         util::{
             path_to_name,
-            read_file,
             join_bytes,
             unwrap_str,
             create_and_write_file
@@ -120,13 +119,12 @@ pub struct NesDisassembler {
 }
 
 impl NesDisassembler {
-    pub fn new(path: &String) -> Self {
-        let mem = read_file(path);
+    pub fn new(path: &String, mem: &Vec<u8>) -> Self {
 
         Self {
             path: String::from(path),
             header: NesHeader::new(&mem),
-            mem,
+            mem: mem.to_vec(),
             lines: Vec::new(),
             pc: 0,
             prg_rom: Block::new(NesHeader::HEADER_SIZE, 0),

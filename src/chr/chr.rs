@@ -10,7 +10,6 @@ use crate::{
     utils::{
         block::Block,
         util::{
-            read_file,
             path_to_name
         },
         error::NesError
@@ -28,14 +27,12 @@ pub struct NesChr {
 }
 
 impl NesChr {
-    pub fn new(path: &String) -> Self {
-        let mem = read_file(path);
-
+    pub fn new(path: &String, mem: &Vec<u8>) -> Self {
         Self {
             path: String::from(path),
             header: NesHeader::new(&mem),
             chr_rom: Block::new(0, 0),
-            mem,
+            mem: mem.to_vec(),
             images: Vec::new()
         }
     }

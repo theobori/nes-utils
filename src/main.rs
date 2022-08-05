@@ -12,6 +12,7 @@ use disassembler::disassembler::NesDisassembler;
 use models::nesutil_model::NesUtil;
 
 use structopt::StructOpt;
+use utils::util::read_file;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "nes-utils")]
@@ -42,11 +43,13 @@ fn main() {
     let path = String::from(opt.input.to_str().unwrap());
     let mut objs = Vec::<Box<dyn NesUtil>>::new();
 
+    let mem = read_file(&path);
+
     if opt.extract_chr {
-        objs.push(Box::new(NesChr::new(&path)));
+        objs.push(Box::new(NesChr::new(&path, &mem)));
     }
     if opt.disassemble {
-        objs.push(Box::new(NesDisassembler::new(&path)));
+        objs.push(Box::new(NesDisassembler::new(&path, &mem)));
     }
 
     for obj in objs.iter_mut() {
