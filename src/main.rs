@@ -28,7 +28,7 @@ struct Opt {
     // #[structopt(short, long)]
     // to_chr: bool,
 
-    /// Output filename base
+    /// Output filename
     #[structopt(short, long)]
     output: Option<String>,
 

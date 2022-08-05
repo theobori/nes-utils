@@ -14,13 +14,14 @@ pub fn path_to_name(path: &str) -> &str {
     name_vec[0]
 }
 
-pub fn write_file(path: &str, data: &[u8]) {
+pub fn create_and_write_file(path: &str, data: &[u8]) {
     match File::create(path) {
         Ok(mut file) => file.write_all(data)
             .expect("Unable to write"),
         Err(_) => panic!("{}", NesError::FileInvalid)
     };
 }
+
 
 pub fn read_file(path: &String) -> Vec<u8> {
     let f = File::open(path);

@@ -7,10 +7,10 @@ use crate::{
         opcode,
         util::{
             path_to_name,
-            write_file,
             read_file,
             join_bytes,
-            unwrap_str
+            unwrap_str,
+            create_and_write_file
         }
     },
     models::{
@@ -22,7 +22,11 @@ use crate::{
     }
 };
 
-use std::fmt;
+use std::{
+    fmt,
+    fs::OpenOptions,
+    io::prelude::*
+};
 use std::cmp::Ordering;
 
 struct Line {
@@ -221,6 +225,32 @@ impl NesDisassembler {
 
         self
     }
+
+    fn include_chr(
+        &mut self,
+        asm_path: &str,
+        name: &str
+    ) -> &mut Self {
+        let mut f = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open(asm_path)
+            .expect("Unable to open this file");
+        
+        writeln!(f, "\n\n; CHR\n.incbin {}.chr", name).unwrap();
+
+        self
+    }
+
+    fn dump_chr(&mut self, path: &str) -> bool {
+        match &self.chr_rom.value {
+            Some(data) => {
+                create_and_write_file(path, &data);
+                true
+            },
+            None => false
+        }
+    }
 }
 
 impl NesUtil for NesDisassembler { }
@@ -235,17 +265,26 @@ impl Util for NesDisassembler {
 }
 
 impl Save for NesDisassembler {
-    fn save_as(&mut self, filename: &str) {
+    fn save_as(&mut self, path: &str) {
         let mut line_str = String::from("");
+        let name = path_to_name(path);
         
         for line in &self.lines {
             line_str.push_str(&format!("{}", line));
         }
         
-        write_file(
-            &filename.to_string(),
+        // Dumping assembly code
+        create_and_write_file(
+            &path.to_string(),
             line_str.as_bytes()
         );
+
+        // Dumping and include CHR
+        let chr_path = format!("{}.chr", name);
+    
+        if self.dump_chr(&chr_path) {
+            self.include_chr(path, name);
+        }
     }
     
     fn save(&mut self) {

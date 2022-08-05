@@ -11,7 +11,7 @@
 Name           | Status
 -------------  |:-------------:
 Dump header into .asm | ⌛
-Include .chr into .asm | ⌛
+Include .chr into .asm | ✅
 Disassemble instructions | ✅
 PPU registers indication for disassemble | ⌛
 Dump CHR ROM graphics data into images | ✅
