@@ -1,15 +1,16 @@
 use crate::{
-    disassembler::header::NesHeader,
+    disassembler::{
+        header::NesHeader,
+        line::Line
+    },
     utils::{
         error::NesError,
         block::Block,
-        opcode::OpCode,
         opcode,
         util::{
             path_to_name,
             join_bytes,
-            unwrap_str,
-            create_and_write_file
+            create_and_write_file,
         }
     },
     models::{
@@ -21,98 +22,14 @@ use crate::{
     }
 };
 
-use std::fmt;
-use std::cmp::Ordering;
-
-struct Line {
-    pub bytes: Vec<u8>,
-    pub opcode: OpCode,
-    pub label: Option<String>,
-    pub fmt_arg: String,
-    pub comment: Option<String>
-}
-
-impl Line {
-    pub fn len(&self) -> usize {
-        let mut ret: usize = 0;
-
-        if let Some(comment) = &self.comment {
-            ret += comment.len();
-        }
-        if let Some(label) = &self.label {
-            ret += label.len();
-        }
-
-        ret += self.opcode.mnemonic.len() + self.fmt_arg.len();
-
-        ret
-    }
-
-    pub fn set_fmt_arg(&mut self) -> &String {
-        let mut arg = self.bytes[1..].to_vec();
-
-        // Reverse because of the little endian
-        arg.reverse();
-
-        let mut arg = OpCode::arg_to_string(&arg);
-        arg = self.opcode.mode.fmt_arg(&arg);
-
-        self.fmt_arg = arg;
-
-        &self.fmt_arg
-    }
-}
-
-impl Eq for Line { }
-
-impl Ord for Line {
-    fn cmp(&self, other: &Self) -> Ordering {
-        let cmp: i32 = self.len() as i32 - other.len() as i32;
-        let ret: Ordering;
-
-        if cmp < 0 {
-            ret = Ordering::Less;
-        } else if cmp > 0 {
-            ret = Ordering::Greater
-        } else {
-            ret = Ordering::Equal
-        }
-
-        ret
-    }
-}
-
-impl PartialOrd for Line {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl PartialEq for Line {
-    fn eq(&self, other: &Self) -> bool {
-        self.cmp(other) == Ordering::Equal
-    }
-}
-
-impl fmt::Display for Line {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let label = unwrap_str(&self.label, "", ":\n");
-        let comment = unwrap_str(&self.comment, "", "");
-
-        write!(f, "{}{} {}{}\n",
-            label,
-            self.opcode.mnemonic,
-            self.fmt_arg,
-            comment
-        )
-    }
-}
+pub type EquConst = (u16, String);
 
 pub struct NesDisassembler {
     path: String,
     header: NesHeader,
     mem: Vec<u8>,
-    lines: Vec<Line>,
+    const_lines: Vec<EquConst>,
+    prg_lines: Vec<Line>,
     pc: usize,
     prg_rom: Block,
     chr_rom: Block
@@ -125,7 +42,8 @@ impl NesDisassembler {
             path: String::from(path),
             header: NesHeader::new(&mem),
             mem: mem.to_vec(),
-            lines: Vec::new(),
+            const_lines: Vec::new(),
+            prg_lines: Vec::new(),
             pc: 0,
             prg_rom: Block::new(NesHeader::HEADER_SIZE, 0),
             chr_rom: Block::new(0, 0)
@@ -159,7 +77,7 @@ impl NesDisassembler {
     fn disassemble(&mut self) -> &mut Self {
         // Header parsing + link metadata
         self.parse();
-        self.lines = Vec::new();
+        self.prg_lines = Vec::new();
 
         // Disassemble
         while self.pc < self.prg_rom.size {
@@ -183,10 +101,14 @@ impl NesDisassembler {
                 fmt_arg: String::from(""),
                 comment: None
             };
-            line.set_fmt_arg();
+            if let Some(equ) = line.fmt_arg() {
+                if self.const_lines.contains(&equ) == false {
+                    self.const_lines.push(equ);
+                }
+            }
 
-            // Fill self.lines
-            self.lines.push(line);
+            // Fill self.prg_lines
+            self.prg_lines.push(line);
 
             // Next line
             self.pc += code.len as usize;
@@ -197,7 +119,7 @@ impl NesDisassembler {
 
     fn add_comments(&mut self) -> &mut Self {
         let mut comment;
-        let n = self.lines
+        let n = self.prg_lines
             .iter()
             .max_by(|x, y| x.cmp(y));
         
@@ -208,7 +130,7 @@ impl NesDisassembler {
 
         let mut spaces;
 
-        for line in self.lines.iter_mut() {
+        for line in self.prg_lines.iter_mut() {
             spaces = " ".repeat(n - line.len());
             comment = join_bytes(&line.bytes, " ");
             comment = format!("{} ; {}", spaces, comment);
@@ -245,10 +167,15 @@ impl Save for NesDisassembler {
         let mut line_str = String::from("");
         let name = path_to_name(path);
         
-        // Dumping PRG
-        line_str.push_str("; PRG ROM\n\n");
+        line_str.push_str("; Mapped registers\n\n");
+        for (value, name) in &self.const_lines {
+            line_str.push_str(&format!("{} equ ${:02x?}\n", name, value));
+        }
 
-        for line in &self.lines {
+        // Dumping PRG
+        line_str.push_str("\n; PRG ROM\n\n");
+
+        for line in &self.prg_lines {
             line_str.push_str(&format!("{}", line));
         }
         

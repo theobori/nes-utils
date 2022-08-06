@@ -63,3 +63,8 @@ pub fn unwrap_str<'a>(
         None => String::from("")
     }
 }
+
+pub fn u16_from_mem(upper: u8, lower: u8) -> u16 {
+
+    (lower as u16) << 8 | upper as u16
+}

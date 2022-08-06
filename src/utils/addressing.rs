@@ -29,4 +29,13 @@ impl AddressingMode {
             Self::Implied => "".to_string()
         }
     }
+
+    pub fn fmt_arg_with_reg(&self, arg: &str) -> String {
+        let mut ret = self.fmt_arg(arg);
+
+        ret = ret.replace("$", "");
+        ret = ret.replace("#", "");
+
+        ret
+    }
 }
