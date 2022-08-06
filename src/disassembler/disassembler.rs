@@ -173,6 +173,10 @@ impl Save for NesDisassembler {
             line_str.push_str(&format!("{} equ ${:02x?}\n", name, value));
         }
         
+        // Dumping header
+        line_str.push_str("\n; Header\n\n");
+        line_str.push_str(&format!("{}\n", self.header));
+
         // Dumping PRG
         line_str.push_str("\n; PRG ROM\n\n");
         

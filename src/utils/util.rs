@@ -68,3 +68,13 @@ pub fn u16_from_mem(upper: u8, lower: u8) -> u16 {
 
     (lower as u16) << 8 | upper as u16
 }
+
+pub fn vec_bytes_to_string(vec: &Vec<u8>) -> String {
+    let mut ret = Vec::<String>::new();
+
+    for byte in vec {
+        ret.push(format!("{:02x?}", byte));
+    }
+
+    ret.join(" ")
+}

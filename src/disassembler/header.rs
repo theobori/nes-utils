@@ -1,24 +1,36 @@
+use core::fmt;
 use std::collections::HashMap;
 
 use crate::{
     utils::error::NesError,
-    utils::block::Block,
+    utils::{
+        block::Block,
+        util::vec_bytes_to_string
+    },
     models::header_model::Header
+};
+
+const NES_HEADER_FIELDS_ORDER: [(&str, usize, usize); 9] = {
+    [
+        ("magic", 0, 4),
+        ("len_prg_rom", 4, 1),
+        ("len_chr_rom", 5, 1),
+        ("f6", 6, 1),
+        ("f7", 7, 1),
+        ("len_prg_ram", 8, 1),
+        ("f9", 9, 1),
+        ("f10", 10, 1),
+        ("reserved", 11, 5)
+    ]
 };
 
 lazy_static! {
     pub static ref NES_HEADER_FIELDS: HashMap<&'static str, Block> = {
         let mut m = HashMap::new();
 
-        m.insert("magic", Block::new(0, 4));
-        m.insert("len_prg_rom", Block::new(4, 1));
-        m.insert("len_chr_rom", Block::new(5, 1));
-        m.insert("f6", Block::new(6, 1));
-        m.insert("f7", Block::new(7, 1));
-        m.insert("len_prg_ram", Block::new(8, 1));
-        m.insert("f9", Block::new(9, 1));
-        m.insert("f10", Block::new(10, 1));
-        m.insert("reserved", Block::new(11, 5));
+        for (name, pos, size) in NES_HEADER_FIELDS_ORDER {
+            m.insert(name, Block::new(pos, size));
+        }
 
         m
     };
@@ -29,7 +41,6 @@ pub struct NesHeader {
     mem: Vec<u8>
 }
 
-/// 16 bytes header
 impl NesHeader {
     pub const HEADER_SIZE: usize = 16;
     pub const TRAINER_SIZE: usize = 512;
@@ -47,7 +58,7 @@ impl NesHeader {
         }
 
         Self {
-            fields: fields,
+            fields,
             mem: mem[0..16].to_vec()
         }
     }
@@ -110,5 +121,28 @@ impl Header for NesHeader {
             },
             None => panic!("{}", NesError::HeaderNotParsed)
         }
+    }
+}
+
+impl fmt::Display for NesHeader {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut msg = Vec::<String>::new();
+
+        for (name, _, _) in NES_HEADER_FIELDS_ORDER {
+            let bytes = match self.fields.get(name) {
+                Some(field) => match &field.value {
+                    Some(v) => v.clone(),
+                    None => vec![0x00]
+                },
+                None => continue
+            };
+
+            let bytes_str = vec_bytes_to_string(&bytes);
+            let line = format!("hex {}", bytes_str);
+
+            msg.push(line);            
+        }
+
+        write!(f, "{}", msg.join("\n"))
     }
 }
