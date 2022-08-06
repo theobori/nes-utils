@@ -13,6 +13,7 @@ Name           | Status
 Dump header into .asm | ⌛
 Include .chr into .asm | ✅
 Disassemble instructions | ✅
-PPU registers indication for disassemble | ⌛
+PPU / 2A03 registers indication for disassemble | ✅
 Dump CHR ROM graphics data into images | ✅
 Dump image into CHR ROM | ⌛
+NES PRNG | ⌛

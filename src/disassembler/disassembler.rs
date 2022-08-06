@@ -167,14 +167,15 @@ impl Save for NesDisassembler {
         let mut line_str = String::from("");
         let name = path_to_name(path);
         
+        
         line_str.push_str("; Mapped registers\n\n");
         for (value, name) in &self.const_lines {
             line_str.push_str(&format!("{} equ ${:02x?}\n", name, value));
         }
-
+        
         // Dumping PRG
         line_str.push_str("\n; PRG ROM\n\n");
-
+        
         for line in &self.prg_lines {
             line_str.push_str(&format!("{}", line));
         }

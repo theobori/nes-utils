@@ -80,7 +80,8 @@ impl NesChr {
         
     }
 
-    pub fn img_to_chr(bytes: &[u8]) {
+    #[allow(dead_code)]
+    pub fn img_to_chr(_bytes: &[u8]) {
         todo!()
     }
 }

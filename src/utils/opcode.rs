@@ -69,17 +69,17 @@ lazy_static! {
         m.insert(0x24, OpCode::new(0x24, "bit", 2, AddressingMode::ZeroPage));
         m.insert(0x2c, OpCode::new(0x2c, "bit", 3, AddressingMode::Absolute));
 
-        m.insert(0x30, OpCode::new(0x30, "bmi", 2, AddressingMode::Implied));
+        m.insert(0x30, OpCode::new(0x30, "bmi", 2, AddressingMode::Absolute));
 
-        m.insert(0xd0, OpCode::new(0xd0, "bne", 2, AddressingMode::Implied));
+        m.insert(0xd0, OpCode::new(0xd0, "bne", 2, AddressingMode::Absolute));
 
-        m.insert(0x10, OpCode::new(0x10, "bpl", 2, AddressingMode::Implied));
+        m.insert(0x10, OpCode::new(0x10, "bpl", 2, AddressingMode::Absolute));
 
         m.insert(0x00, OpCode::new(0x00, "brk", 1, AddressingMode::Implied));
 
-        m.insert(0x50, OpCode::new(0x50, "bvc", 2, AddressingMode::Implied));
+        m.insert(0x50, OpCode::new(0x50, "bvc", 2, AddressingMode::Absolute));
 
-        m.insert(0x70, OpCode::new(0x70, "bvs", 2, AddressingMode::Implied));
+        m.insert(0x70, OpCode::new(0x70, "bvs", 2, AddressingMode::Absolute));
 
         m.insert(0x18, OpCode::new(0x18, "clc", 1, AddressingMode::Implied));
 
@@ -136,7 +136,7 @@ lazy_static! {
         m.insert(0x4c, OpCode::new(0x4c, "jmp", 3, AddressingMode::Absolute)); 
         m.insert(0x6c, OpCode::new(0x6c, "jmp", 3, AddressingMode::Indirect));
 
-        m.insert(0x20, OpCode::new(0x20, "jsr", 3, AddressingMode::Implied));
+        m.insert(0x20, OpCode::new(0x20, "jsr", 3, AddressingMode::Absolute));
 
         m.insert(0xa9, OpCode::new(0xa9, "lda", 2, AddressingMode::Immediate));
         m.insert(0xa5, OpCode::new(0xa5, "lda", 2, AddressingMode::ZeroPage));
