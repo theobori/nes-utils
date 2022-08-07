@@ -4,6 +4,20 @@ use crate::models::nesutil_model::{
     NesUtil
 };
 
+/// Manage Nes PRNG
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// use nes_utils::prng::prng::NesPrng;
+///
+/// let mut prng = NesPrng::new(13, None);
+/// prng.random();
+/// 
+/// let number = prng.get_number();
+/// ```
 pub struct NesPrng {
     seed: [u8; 2],
     y: u8,
@@ -102,7 +116,8 @@ impl NesPrng {
         self.seed[0] = self.a;
     }
 
-    fn random(&mut self) -> u8 {
+    /// Generating a pseudo random number
+    pub fn random(&mut self) -> u8 {
         match self.it {
             Some(it) => {
                 for _ in 0..it {
@@ -119,21 +134,38 @@ impl NesPrng {
 impl NesUtil for NesPrng { }
 
 impl Util for NesPrng {
+    /// Generate a pseudo random number
     fn run(&mut self) {
         self.random();
     }
 }
 
 impl Save for NesPrng {
-    fn save(&mut self) {
+    /// Print the random number
+    fn save_as(&mut self, _path: &str) {
         println!("{}", self.a);
     }
 
-    fn save_as(&mut self, _path: &str) {
+    /// Same as `save_as`
+    fn save(&mut self) {
         println!("{}", self.a);
     }
 }
 
+/// Return a random number between 0 and 0xff
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// use nes_utils::prng::prng::random;
+/// 
+/// let seed = 2;
+/// let iterations = 14;
+/// 
+/// let number = random(seed, Some(iterations));
+/// ```
 pub fn random(seed: u16, it: Option<u16>) -> u8 {
     let mut prng = NesPrng::new(seed, it);
 
