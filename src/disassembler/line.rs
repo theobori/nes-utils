@@ -2,7 +2,7 @@ use crate::utils::{
     opcode::OpCode,
     util::{
         u16_from_mem,
-        unwrap_str
+        unwrap_str, vec_bytes_to_string
     }, registers::get_mapped_register
 };
 
@@ -35,12 +35,35 @@ impl Line {
         ret
     }
 
-    pub fn fmt_arg(&mut self) -> Option<EquConst> {
+    fn fmt_special(&mut self) -> bool {
+        let arg_bytes = self.bytes[1..].to_vec();
+
+        match self.opcode.mnemonic {
+            "hex" => {
+                self.fmt_arg = vec_bytes_to_string(&arg_bytes);
+            },
+            _ => return false
+        };
+
+        true
+    }
+
+    pub fn fmt(&mut self) -> Option<EquConst> {
+        if self.fmt_special() {
+            return None
+        }
+
+        self.fmt_arg()
+    }
+
+    fn fmt_arg(&mut self) -> Option<EquConst> {
         let mut arg_bytes = self.bytes[1..].to_vec();
 
         // Because of the endianess (little)
         arg_bytes.reverse();
 
+
+        // Normal format
         let mut arg_str = OpCode::arg_to_string(&arg_bytes);
         let mut ret = None;
 

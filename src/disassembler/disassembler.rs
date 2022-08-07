@@ -101,7 +101,7 @@ impl NesDisassembler {
                 fmt_arg: String::from(""),
                 comment: None
             };
-            if let Some(equ) = line.fmt_arg() {
+            if let Some(equ) = line.fmt() {
                 if self.const_lines.contains(&equ) == false {
                     self.const_lines.push(equ);
                 }
