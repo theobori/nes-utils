@@ -77,12 +77,6 @@ impl NesChr {
     
             self.images.push(image);
         }
-        
-    }
-
-    #[allow(dead_code)]
-    pub fn img_to_chr(_bytes: &[u8]) {
-        todo!()
     }
 }
 

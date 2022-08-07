@@ -4,7 +4,6 @@ use crate::models::nesutil_model::{
     NesUtil
 };
 
-/// Linear feedback shift register
 pub struct NesPrng {
     seed: [u8; 2],
     y: u8,
@@ -18,62 +17,63 @@ impl NesPrng {
             seed: [
                 (seed >> 8) as u8,
                 (seed & 0xff) as u8
-            ],
-            y: 0,
-            a: 0,
-            it
+                ],
+                y: 0,
+                a: 0,
+                it
+            }
         }
-    }
-
-    pub fn set_it(&mut self, it: u16) {
-        self.it = Some(it);
-    }
-
-    #[allow(dead_code)]
-    fn seed_u16(&self) -> u16 {
-        let low = self.seed[1];
-        let high = self.seed[0] << 8;
-
-        high as u16 | low as u16
-    }
-
-    fn lsr(&mut self) {
-        self.a >>= 1;
-    }
-
-    fn eor(&mut self, value: u8) {
-        self.a ^= value;
+        
+        pub fn set_it(&mut self, it: u16) {
+            self.it = Some(it);
+        }
+        
+        #[allow(dead_code)]
+        fn seed_u16(&self) -> u16 {
+            let low = self.seed[1];
+            let high = self.seed[0] << 8;
+            
+            high as u16 | low as u16
+        }
+        
+        fn lsr(&mut self) {
+            self.a >>= 1;
+        }
+        
+        fn eor(&mut self, value: u8) {
+            self.a ^= value;
     }
 
     fn lda(&mut self, value: u8) {
         self.a = value;
     }
-
+    
     fn tay(&mut self) {
         self.y = self.a;
     }
-
+    
     fn tya(&mut self) {
         self.a = self.y;
     }
-
+    
     fn asl(&mut self) {
         self.a <<= 1;
     }
-
+    
+    /// Linear feedback shift register
     fn overlapped(&mut self) {
         self.lda(self.seed[1]);
         self.tay();
-
+        
         self.lsr();
         self.lsr();
         self.lsr();
-
+        
         // sta seed+1
         self.seed[1] = self.a;
-
+        
         self.lsr();
-
+        
         self.eor(self.seed[1]);
         self.eor(self.seed[0]);
 

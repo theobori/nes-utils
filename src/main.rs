@@ -3,6 +3,7 @@ mod chr;
 mod utils;
 mod models;
 mod prng;
+mod game_genie;
 
 #[macro_use]
 extern crate lazy_static;
