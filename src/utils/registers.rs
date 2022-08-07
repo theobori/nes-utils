@@ -1,45 +1,46 @@
-use std::collections::HashMap;
-
-lazy_static! {
-    pub static ref MAPPED_REGISTERS: HashMap<u16, &'static str> = {
-        let mut m = HashMap::new();
-
+pub fn get_mapped_register(address: u16) -> Option<String> {
+    let name = match address {
         // PPU
-        m.insert(0x2000, "PPUCTRL");
-        m.insert(0x2001, "PPUMASK");
-        m.insert(0x2002, "PPUSTATUS");
-        m.insert(0x2003, "OAMADDR");
-        m.insert(0x2004, "OAMDATA");
-        m.insert(0x2005, "PPUSCROLL");
-        m.insert(0x2006, "PPUADDR");
-        m.insert(0x2007, "PPUDATA");
-        m.insert(0x4014, "OAMDMA");
+        0x2000 => "PPUCTRL",
+        0x2001 => "PPUMASK",
+        0x2002 => "PPUSTATUS",
+        0x2003 => "OAMADDR",
+        0x2004 => "OAMDATA",
+        0x2005 => "PPUSCROLL",
+        0x2006 => "PPUADDR",
+        0x2007 => "PPUDATA",
+        0x4014 => "OAMDMA",
 
         // 2A03
-
-        m.insert(0x4000, "SQ1_VOL");
-        m.insert(0x4001, "SQ1_SWEEP");
-        m.insert(0x4002, "SQ1_LO");
-        m.insert(0x4003, "SQ1_HI");
-        m.insert(0x4004, "SQ2_VOL");
-        m.insert(0x4005, "SQ2_SWEEP");
-        m.insert(0x4006, "SQ2_LO");
-        m.insert(0x4007, "SQ2_HI");
-        m.insert(0x4008, "TRI_LINEAR");
-        m.insert(0x400A, "TRI_LO");
-        m.insert(0x400B, "TRI_HI");
-        m.insert(0x400C, "NOISE_VOL");
-        m.insert(0x400E, "NOISE_LO");
-        m.insert(0x400F, "NOISE_HI");
-        m.insert(0x4010, "DMC_FREQ");
-        m.insert(0x4011, "DMC_RAW");
-        m.insert(0x4012, "DMC_START");
-        m.insert(0x4013, "DMC_LEN");
-        m.insert(0x4014, "OAMDMA");
-        m.insert(0x4015, "SND_CHN");
-        m.insert(0x4016, "JOY1");
-        m.insert(0x4017, "JOY2");
-
-        m
+        0x4000 => "SQ1_VOL",
+        0x4001 => "SQ1_SWEEP",
+        0x4002 => "SQ1_LO",
+        0x4003 => "SQ1_HI",
+        0x4004 => "SQ2_VOL",
+        0x4005 => "SQ2_SWEEP",
+        0x4006 => "SQ2_LO",
+        0x4007 => "SQ2_HI",
+        0x4008 => "TRI_LINEAR",
+        0x400A => "TRI_LO",
+        0x400B => "TRI_HI",
+        0x400C => "NOISE_VOL",
+        0x400E => "NOISE_LO",
+        0x400F => "NOISE_HI",
+        0x4010 => "DMC_FREQ",
+        0x4011 => "DMC_RAW",
+        0x4012 => "DMC_START",
+        0x4013 => "DMC_LEN",
+        0x4015 => "SND_CHN",
+        0x4016 => "JOY1",
+        0x4017 => "JOY2",
+        _ => ""
     };
+
+    if name == "" {
+        return None;
+    }
+
+    let ret = String::from(name);
+
+    Some(ret)
 }

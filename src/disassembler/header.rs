@@ -24,18 +24,6 @@ const NES_HEADER_FIELDS_ORDER: [(&str, usize, usize); 9] = {
     ]
 };
 
-lazy_static! {
-    pub static ref NES_HEADER_FIELDS: HashMap<&'static str, Block> = {
-        let mut m = HashMap::new();
-
-        for (name, pos, size) in NES_HEADER_FIELDS_ORDER {
-            m.insert(name, Block::new(pos, size));
-        }
-
-        m
-    };
-}
-
 pub struct NesHeader {
     fields: HashMap<String, Block>,
     mem: Vec<u8>
@@ -51,10 +39,10 @@ impl NesHeader {
     pub fn new(mem: &Vec<u8>) -> Self {
         let mut fields = HashMap::new();
 
-        for (key, value) in NES_HEADER_FIELDS.iter() {
-            let block = Block::new(value.pos, value.size);
+        for (name, pos, size) in NES_HEADER_FIELDS_ORDER {
+            let block = Block::new(pos, size);
     
-            fields.insert(String::from(*key), block);
+            fields.insert(String::from(name), block);
         }
 
         Self {

@@ -1,10 +1,9 @@
 use crate::utils::{
-    registers::MAPPED_REGISTERS,
     opcode::OpCode,
     util::{
         u16_from_mem,
         unwrap_str
-    }
+    }, registers::get_mapped_register
 };
 
 use std::fmt;
@@ -49,10 +48,10 @@ impl Line {
 
         arg_str = match self.arg_to_le_u16() {
             Some(value) => {
-                match MAPPED_REGISTERS.get(&value) {
+                match get_mapped_register(value) {
                     Some(name) => {
-                        ret = Some((value, String::from(*name)));
-                        self.opcode.mode.fmt_arg_with_reg(*name)
+                        ret = Some((value, name.clone()));
+                        self.opcode.mode.fmt_arg_with_reg(&name)
                     },
                     None => arg_str
                 }

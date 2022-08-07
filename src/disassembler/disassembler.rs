@@ -6,7 +6,7 @@ use crate::{
     utils::{
         error::NesError,
         block::Block,
-        opcode,
+        opcode::get_nes_opcode,
         util::{
             path_to_name,
             join_bytes,
@@ -83,7 +83,7 @@ impl NesDisassembler {
         while self.pc < self.prg_rom.size {
             // Check if the opcode has been implemented
             let byte = self.mem[self.pc];
-            let code = match opcode::NES_OP_CODES.get(&byte) {
+            let code = match get_nes_opcode(&byte) {
                 Some(value) => value,
                 None => panic!(
                     "{} (0x{:02x?})",
@@ -96,7 +96,7 @@ impl NesDisassembler {
 
             let mut line = Line {
                 bytes: code_bytes.to_vec(),
-                opcode: *code,
+                opcode: code,
                 label: None,
                 fmt_arg: String::from(""),
                 comment: None

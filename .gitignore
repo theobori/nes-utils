@@ -18,3 +18,6 @@ games/
 
 # Dumping PRG ROM
 *.asm
+
+# No more a binary
+main.rs
