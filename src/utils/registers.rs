@@ -33,12 +33,8 @@ pub fn get_mapped_register(address: u16) -> Option<String> {
         0x4015 => "SND_CHN",
         0x4016 => "JOY1",
         0x4017 => "JOY2",
-        _ => ""
+        _ => return None
     };
-
-    if name == "" {
-        return None;
-    }
 
     let ret = String::from(name);
 

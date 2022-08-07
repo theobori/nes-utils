@@ -32,8 +32,6 @@ impl NesChrEncode {
             mem: [0x00; NesHeader::CHR_ROM_UNIT_SIZE]
         }
     }
-
-    
 }
 
 impl NesUtil for NesChrEncode { }

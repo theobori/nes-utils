@@ -38,7 +38,7 @@ impl NesImage {
         }
     }
 
-    pub fn put_pixel(&mut self, x: usize, y: usize, pixel: Rgb) {
+    fn put_pixel(&mut self, x: usize, y: usize, pixel: Rgb) {
         let pos = y * NesImage::W + x;
 
         self.mem[pos] = pixel;

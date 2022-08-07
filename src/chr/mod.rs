@@ -1,3 +1,6 @@
+/// Nes CHR ROM
 pub mod chr;
-pub mod image;
+
+/// Encoding in the CHR format
 pub mod encode;
+mod image;

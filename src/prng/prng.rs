@@ -24,6 +24,10 @@ impl NesPrng {
             }
         }
         
+        pub fn get_number(&self) -> u8 {
+            self.a
+        }
+
         pub fn set_it(&mut self, it: u16) {
             self.it = Some(it);
         }
@@ -128,4 +132,12 @@ impl Save for NesPrng {
     fn save_as(&mut self, _path: &str) {
         println!("{}", self.a);
     }
+}
+
+pub fn random(seed: u16, it: Option<u16>) -> u8 {
+    let mut prng = NesPrng::new(seed, it);
+
+    prng.random();
+
+    prng.get_number()
 }

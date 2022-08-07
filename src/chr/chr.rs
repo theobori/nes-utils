@@ -18,6 +18,29 @@ use crate::{
 
 use super::image::NesImage;
 
+/// Interacting with the CHR ROM 
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// use nes_utils::chr::chr::NesChr;
+/// use nes_utils::models::nesutil_model::{Util, Save};
+/// 
+/// use std::fs::File;
+/// use std::io::Read;
+/// 
+/// let path = String::from("games/game.nes");
+/// let mut mem = Vec::<u8>::new();
+/// let mut f = File::open(&path).unwrap();
+///
+/// f.read_to_end(&mut mem);
+///
+/// let mut chr = NesChr::new(&path, &mem);
+/// chr.run();
+/// chr.save();
+/// ```
 pub struct NesChr {
     path: String,
     header: NesHeader,
@@ -83,10 +106,9 @@ impl NesChr {
 impl NesUtil for NesChr { }
 
 impl Save for NesChr {
-    fn save(&mut self) {
-        self.save_as(&self.path.clone());
-    }
-
+    /// Save pixels to the path as argument.
+    /// 
+    /// Dump the two CHR banks into two PNG files
     fn save_as(&mut self, path: &str) {
         let mut n = 0;
 
@@ -100,9 +122,15 @@ impl Save for NesChr {
             n += 1;
         }
     }
+
+    /// Same as `save_as` but with the path stored in the struct.
+    fn save(&mut self) {
+        self.save_as(&self.path.clone());
+    }
 }
 
 impl Util for NesChr {
+    /// Parse the CHR ROM and dump images into PNGs
     fn run(&mut self) {
         self.parse();
 

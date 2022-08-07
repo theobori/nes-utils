@@ -22,8 +22,32 @@ use crate::{
     }
 };
 
+/// Representing a constant value (in the assembly code)
 pub type EquConst = (u16, String);
 
+/// Interacting with NES header, PRG ROM and CHR ROM.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// use nes_utils::disassembler::disassembler::NesDisassembler;
+/// use nes_utils::models::nesutil_model::Util;
+/// 
+/// use std::fs::File;
+/// use std::io::Read;
+/// 
+/// let path = String::from("games/game.nes");
+/// let mut mem = Vec::<u8>::new();
+/// let mut f = File::open(&path).unwrap();
+///
+/// f.read_to_end(&mut mem);
+///
+/// let mut d = NesDisassembler::new(&path, &mem);
+/// d.run();
+/// d.dump();
+/// ```
 pub struct NesDisassembler {
     path: String,
     header: NesHeader,
@@ -149,11 +173,40 @@ impl NesDisassembler {
             None => false
         }
     }
+
+    fn fmt_lines(&mut self) -> String {
+        let mut ret = String::from("");
+    
+        ret.push_str("; Mapped registers\n\n");
+        for (value, name) in &self.const_lines {
+            ret.push_str(&format!("{} equ ${:02x?}\n", name, value));
+        }
+        
+        // Dumping header
+        ret.push_str("\n; Header\n\n");
+        ret.push_str(&format!("{}\n", self.header));
+
+        // Dumping PRG
+        ret.push_str("\n; PRG ROM\n\n");
+        
+        for line in &self.prg_lines {
+            ret.push_str(&format!("{}", line));
+        }
+
+        ret
+    }
+
+    pub fn dump(&mut self) {
+        let content = self.fmt_lines();
+    
+        println!("{}", content);
+    }
 }
 
 impl NesUtil for NesDisassembler { }
 
 impl Util for NesDisassembler {
+    /// Parse the bytes and fill structs to format it later.
     fn run(&mut self) {
         self
             .parse()
@@ -163,26 +216,12 @@ impl Util for NesDisassembler {
 }
 
 impl Save for NesDisassembler {
+    /// Save the header and the PRG ROM (assembly code) to the path as argument.
+    /// 
+    /// Dump the CHR ROM data to a `.chr` file with the same prefix.
     fn save_as(&mut self, path: &str) {
-        let mut line_str = String::from("");
         let name = path_to_name(path);
-        
-        
-        line_str.push_str("; Mapped registers\n\n");
-        for (value, name) in &self.const_lines {
-            line_str.push_str(&format!("{} equ ${:02x?}\n", name, value));
-        }
-        
-        // Dumping header
-        line_str.push_str("\n; Header\n\n");
-        line_str.push_str(&format!("{}\n", self.header));
-
-        // Dumping PRG
-        line_str.push_str("\n; PRG ROM\n\n");
-        
-        for line in &self.prg_lines {
-            line_str.push_str(&format!("{}", line));
-        }
+        let mut line_str = self.fmt_lines();
         
         // Dumping CHR
         let chr_path = format!("{}.chr", name);
@@ -198,6 +237,7 @@ impl Save for NesDisassembler {
         );
     }
     
+    /// Same as `save_as` but with the path stored in the struct.
     fn save(&mut self) {
         let name = path_to_name(&self.path);
         let path = format!("./{}.asm", name);

@@ -1,8 +1,5 @@
 use std::fs::File;
-use std::io::{
-    Write,
-    Read
-};
+use std::io::Write;
 
 use crate::utils::error::NesError;
 
@@ -20,23 +17,6 @@ pub fn create_and_write_file(path: &str, data: &[u8]) {
             .expect("Unable to write"),
         Err(_) => panic!("{}", NesError::FileInvalid)
     };
-}
-
-
-pub fn read_file(path: &String) -> Vec<u8> {
-    let f = File::open(path);
-        
-    match f {
-        Ok(mut file) => {
-            let mut data = Vec::<u8>::new();
-
-            match file.read_to_end(&mut data) {
-                Ok(_) => data,
-                Err(_) => panic!("{}", NesError::FileInvalid)
-            }
-        },
-        Err(_) => panic!("{}", NesError::FileNotFound)
-    }
 }
 
 pub fn join_bytes(vec: &[u8], sep: &str) -> String {
