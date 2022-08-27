@@ -3,8 +3,35 @@ name = "nes-utils"
 version = "0.1.0"
 edition = "2021"
 
+include = [
+    "src/**",
+    "Cargo.toml",
+    "README.md",
+    "LICENSE"
+]
+
+exclude = [
+    "src/mains.rs"
+]
+
+homepage = "https://github.com/theobori/nes-utils"
+description = "NES utilities (disassemble, extract CHR ROM graphics data, decode Game Genie, etc..)"
+repository = "https://github.com/theobori/nes-utils"
+keywords = [
+    "lib",
+    "nes",
+    "utilities"
+]
+
+categories = [
+    "parsing",
+    "rendering::data-formats",
+
+]
+license = "MIT"
+readme = "README.md"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 image = "0.24.3"
-structopt = "0.3.26"

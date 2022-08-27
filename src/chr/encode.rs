@@ -7,6 +7,7 @@ use crate::{
     disassembler::header::NesHeader
 };
 
+#[allow(dead_code)]
 const COLOR_SCHEME: [u8; 4] = [
     0,
     126,
@@ -14,6 +15,7 @@ const COLOR_SCHEME: [u8; 4] = [
     255,
 ];
 
+#[allow(dead_code)]
 pub struct NesChrEncode {
     path: String,
     rgb_data: Vec<u8>,
@@ -47,7 +49,7 @@ impl Save for NesChrEncode {
         todo!()
     }
 
-    fn save_as(&mut self, path: &str) {
+    fn save_as(&mut self, _path: &str) {
         todo!()
     }
 }
