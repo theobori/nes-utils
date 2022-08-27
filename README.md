@@ -45,7 +45,7 @@ Name           | Status
 -------------  |:-------------:
 Dump header into .asm | ✅
 Include .chr into .asm | ✅
-Disassemble instructions | ✅
+Disassemble instructions | ⌛
 PPU / 2A03 registers indication for asm code | ✅
 Dump CHR ROM graphics data into images | ✅
 Dump image into CHR ROM | ⌛
